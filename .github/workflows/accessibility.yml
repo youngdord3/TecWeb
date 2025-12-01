@@ -1,0 +1,22 @@
+name: Accessibility checks (Pa11y)
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  pa11y:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Pa11y
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y npm
+          npm install -g pa11y
+
+      - name: Run Pa11y on homepage
+        run: pa11y file://$GITHUB_WORKSPACE/index.html
