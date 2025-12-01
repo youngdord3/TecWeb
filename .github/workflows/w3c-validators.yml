@@ -2,23 +2,33 @@ name: W3C Validators (HTML + CSS)
 
 on:
   push:
-    branches: [ main ]
+    branches: [ "main" ]
   pull_request:
+    branches: [ "main" ]
 
 jobs:
   validate:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
-      - name: Install W3C Validator (vnu-jar)
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y npm
-          sudo npm install -g vnu-jar
+    - name: Install HTML Validator (Nu Html Checker)
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y default-jre wget unzip
+        wget https://www.w3.org/nu/vnu.jar.zip
+        unzip vnu.jar.zip
 
-      - name: Run W3C HTML + CSS Validation
-        run: |
-          vnu --errors-only .
+    - name: Validate HTML
+      run: |
+        java -jar ./vnu.jar --skip-non-html --errors-only .
+
+    - name: Install Node.js
+      uses: actions/setup-node@v4
+
+    - name: Validate CSS
+      run: |
+        npm install -g css-validator
+        css-validator "**/*.css"
