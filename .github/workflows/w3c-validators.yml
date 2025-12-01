@@ -25,6 +25,6 @@ jobs:
 
       # ---- CSS VALIDATION ----
       - name: Run W3C CSS Validator
-        uses: Siilwyn/css-validator-action@v2
+        uses: csstools/css-validator@v1
         with:
-          path: "styles"
+          directory: .
