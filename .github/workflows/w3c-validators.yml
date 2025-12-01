@@ -1,0 +1,30 @@
+name: W3C Validators (HTML + CSS)
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # ---- HTML VALIDATION ----
+      - name: Install HTML5 validator (vnu-jar)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y npm
+          sudo npm install -g vnu-jar
+
+      - name: Run W3C HTML Validator
+        run: vnu --skip-non-html --errors-only .
+
+      # ---- CSS VALIDATION ----
+      - name: Run W3C CSS Validator
+        uses: Siilwyn/css-validator-action@v2
+        with:
+          path: "styles"
