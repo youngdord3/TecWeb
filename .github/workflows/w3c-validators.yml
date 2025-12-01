@@ -18,17 +18,19 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y default-jre wget unzip
-        wget https://www.w3.org/nu/vnu.jar.zip
+        wget https://github.com/validator/validator/releases/download/latest/vnu.jar.zip
         unzip vnu.jar.zip
 
     - name: Validate HTML
       run: |
-        java -jar ./vnu.jar --skip-non-html --errors-only .
+        java -jar vnu.jar/vnu.jar --skip-non-html --errors-only .
 
     - name: Install Node.js
       uses: actions/setup-node@v4
+      with:
+        node-version: '20'
 
     - name: Validate CSS
       run: |
         npm install -g css-validator
-        css-validator "**/*.css"
+        find . -name "*.css" -exec css-validator {} \;
