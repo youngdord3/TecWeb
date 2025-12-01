@@ -13,18 +13,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # ---- HTML VALIDATION ----
-      - name: Install HTML5 validator (vnu-jar)
+      - name: Install W3C Validator (vnu-jar)
         run: |
           sudo apt-get update
           sudo apt-get install -y npm
           sudo npm install -g vnu-jar
 
-      - name: Run W3C HTML Validator
-        run: vnu --skip-non-html --errors-only .
-
-      # ---- CSS VALIDATION ----
-      - name: Run W3C CSS Validator
-        uses: csstools/css-validator@v1
-        with:
-          directory: .
+      - name: Run W3C HTML + CSS Validation
+        run: |
+          vnu --errors-only .
