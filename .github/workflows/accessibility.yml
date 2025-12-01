@@ -12,11 +12,13 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Install Pa11y
+      - name: Install Node & Pa11y
         run: |
           sudo apt-get update
           sudo apt-get install -y npm
           npm install -g pa11y
+          npm install puppeteer@latest
 
-      - name: Run Pa11y on homepage
-        run: pa11y file://$GITHUB_WORKSPACE/index.html
+      - name: Run Pa11y with no-sandbox Chromium
+        run: |
+          pa11y file://$GITHUB_WORKSPACE/index.html --chrome-launcher-flags="--no-sandbox --disable-setuid-sandbox"
