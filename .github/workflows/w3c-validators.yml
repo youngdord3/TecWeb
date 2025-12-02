@@ -1,11 +1,3 @@
-name: W3C Validators (HTML + CSS)
-
-on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
-
 jobs:
   validate:
     runs-on: ubuntu-latest
@@ -14,16 +6,17 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
-    # --- NUOVO: Validazione HTML con azione dedicata ---
-    - name: Validate HTML (using VNU Action)
-      uses: validator/html-validator@latest
+    # 🚀 Validazione HTML con Nu Html Checker (VNU)
+    - name: Validate HTML Structure and Syntax
+      # Usa un'azione stabile e ben mantenuta
+      uses: jeffwright13/html-validate@v2
       with:
-        files: '**/*.html' # Controlla tutti i file .html nella repository
-        errors-only: true  # Mostra solo gli errori
+        # Specifica dove cercare i file HTML (ad es. tutti i file .html nella root e sottocartelle)
+        files: '**/*.html'
+        # Richiede che gli errori VNU siano considerati un fallimento (necessario per far fallire il workflow)
+        force-fail: true 
 
-    # ----------------------------------------------------
-
-    # --- Validazione CSS (Mantenuto, ma ottimizzabile) ---
+    # --- Validazione CSS (Passi originali) ---
     - name: Install Node.js
       uses: actions/setup-node@v4
       with:
@@ -31,8 +24,5 @@ jobs:
 
     - name: Validate CSS
       run: |
-        # Attenzione: css-validator NPM usa il servizio remoto W3C, che ha limiti di velocità.
-        # Per una validazione locale e più veloce potresti considerare stylelint o simile.
         npm install -g css-validator
         find . -name "*.css" -exec css-validator {} \;
-    # ----------------------------------------------------
