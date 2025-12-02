@@ -14,17 +14,16 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
-    - name: Install HTML Validator (Nu Html Checker)
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y default-jre wget unzip
-        wget https://github.com/validator/validator/releases/download/latest/vnu.jar.zip
-        unzip vnu.jar.zip
+    # --- NUOVO: Validazione HTML con azione dedicata ---
+    - name: Validate HTML (using VNU Action)
+      uses: validator/html-validator@latest
+      with:
+        files: '**/*.html' # Controlla tutti i file .html nella repository
+        errors-only: true  # Mostra solo gli errori
 
-    - name: Validate HTML
-      run: |
-        java -jar vnu.jar/vnu.jar --skip-non-html --errors-only .
+    # ----------------------------------------------------
 
+    # --- Validazione CSS (Mantenuto, ma ottimizzabile) ---
     - name: Install Node.js
       uses: actions/setup-node@v4
       with:
@@ -32,5 +31,8 @@ jobs:
 
     - name: Validate CSS
       run: |
+        # Attenzione: css-validator NPM usa il servizio remoto W3C, che ha limiti di velocità.
+        # Per una validazione locale e più veloce potresti considerare stylelint o simile.
         npm install -g css-validator
         find . -name "*.css" -exec css-validator {} \;
+    # ----------------------------------------------------
