@@ -9,22 +9,34 @@ on:
 jobs:
   validate:
     runs-on: ubuntu-latest
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
 
-    - name: Validate HTML Structure and Syntax (VNU)
-      uses: jeffwright13/html-validate@v2
-      with:
-        files: '**/*.html'
-        force-fail: true 
+    # -------------------------
+    # HTML VALIDATION (VNU)
+    # -------------------------
+    - name: Install VNU (HTML Validator)
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y default-jre wget unzip
+        wget https://github.com/validator/validator/releases/download/latest/vnu.jar.zip
+        unzip vnu.jar.zip
 
+    - name: Validate HTML
+      run: |
+        java -jar vnu.jar/vnu.jar --errors-only --skip-non-html .
+
+    # -------------------------
+    # CSS VALIDATION (W3C CSS Validator)
+    # -------------------------
     - name: Install Node.js
       uses: actions/setup-node@v4
       with:
         node-version: '20'
 
-    - name: Validate CSS (W3C Service)
+    - name: Validate CSS
       run: |
         npm install -g css-validator
         find . -name "*.css" -exec css-validator {} \;
