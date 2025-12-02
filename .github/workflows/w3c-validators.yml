@@ -1,28 +1,30 @@
+name: W3C Validators (HTML + CSS)
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
 jobs:
   validate:
     runs-on: ubuntu-latest
-
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
 
-    # 🚀 Validazione HTML con Nu Html Checker (VNU)
-    - name: Validate HTML Structure and Syntax
-      # Usa un'azione stabile e ben mantenuta
+    - name: Validate HTML Structure and Syntax (VNU)
       uses: jeffwright13/html-validate@v2
       with:
-        # Specifica dove cercare i file HTML (ad es. tutti i file .html nella root e sottocartelle)
         files: '**/*.html'
-        # Richiede che gli errori VNU siano considerati un fallimento (necessario per far fallire il workflow)
         force-fail: true 
 
-    # --- Validazione CSS (Passi originali) ---
     - name: Install Node.js
       uses: actions/setup-node@v4
       with:
         node-version: '20'
 
-    - name: Validate CSS
+    - name: Validate CSS (W3C Service)
       run: |
         npm install -g css-validator
         find . -name "*.css" -exec css-validator {} \;
