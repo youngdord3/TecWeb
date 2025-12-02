@@ -1,3 +1,5 @@
+name: W3C Validators (HTML + CSS)
+
 on:
   push:
     branches: [ "main" ]
@@ -16,14 +18,12 @@ jobs:
       run: |
         curl -L https://github.com/validator/validator/releases/latest/download/vnu.jar -o vnu.jar
 
-    - name: Validate HTML
+    - name: Validate HTML only
       run: |
-        java -jar vnu.jar --errors-only --exclude ".git" --exclude "vnu.jar" .
+        find . -name "*.html" -print0 | xargs -0 java -jar vnu.jar --errors-only
 
     - name: Install Node.js
       uses: actions/setup-node@v4
-      with:
-        node-version: '20'
 
     - name: Validate CSS (W3C)
       run: |
