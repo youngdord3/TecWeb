@@ -14,42 +14,29 @@ jobs:
 
       - name: Install Node tools
         run: |
-          npm install -g @lhci/cli serve
+          npm install -g lighthouse serve
 
       - name: Start static server
         run: |
           serve -s . -l 8080 &
           sleep 3
 
-      - name: Find all HTML files
-        id: findhtml
-        run: |
-          echo "Generating URL list..."
-          > urls.txt
-          for f in $(find . -name "*.html"); do
-            url="http://localhost:8080/${f#./}"
-            echo "$url" >> urls.txt
-          done
-          echo "Found URLs:"
-          cat urls.txt
-
       - name: Run Lighthouse on all HTML files and print scores
         run: |
-          while read url; do
+          for f in $(find . -name "*.html"); do
+            url="http://localhost:8080/${f#./}"
             echo "------------------------------------------------------------"
             echo "Running Lighthouse on: $url"
             echo "------------------------------------------------------------"
 
-            # Esegue Lighthouse, output JSON salvato in un file temporaneo
-            lhci collect --url="$url" --output=json --output-path=temp.json --quiet
+            # Esegue Lighthouse e prende output JSON in memoria
+            npx lighthouse "$url" --output=json --quiet --chrome-flags="--headless --no-sandbox" > lhci_tmp.json
 
-            # Legge il JSON e stampa i punteggi principali
+            # Legge JSON e stampa punteggi
             node -e "
               const fs = require('fs');
-              const data = JSON.parse(fs.readFileSync('temp.json'));
-              const categories = data.categories;
-              for (const cat in categories) {
-                console.log(cat + ': ' + categories[cat].score);
-              }
+              const data = JSON.parse(fs.readFileSync('lhci_tmp.json'));
+              const cats = data.categories;
+              for (const c in cats) { console.log(c + ': ' + cats[c].score); }
             "
-          done < urls.txt
+          done
