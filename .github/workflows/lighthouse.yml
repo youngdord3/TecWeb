@@ -39,18 +39,18 @@ jobs:
             echo "------------------------------------------------------------"
             echo "Running Lighthouse on: $url"
             echo "------------------------------------------------------------"
-            
-            # Esegue Lighthouse e salva output JSON temporaneo
-            lhci collect --url="$url" --output=json --output-path=temp.json
 
-            # Estrae e stampa i punteggi principali
+            # Esegue Lighthouse e prende solo l'output JSON in memory
+            output=$(lhci collect --url="$url" --output=json --quiet)
+
+            # Stampa i punteggi principali
             echo "Lighthouse scores for $url:"
-            cat temp.json | node -e "
-              const fs = require('fs');
-              const data = JSON.parse(fs.readFileSync('temp.json'));
+            node -e "
+              const data = JSON.parse(process.argv[1]);
               const categories = data.categories;
               for (const cat in categories) {
                 console.log(cat + ': ' + categories[cat].score);
               }
-            "
+            " "$output"
+
           done < urls.txt
