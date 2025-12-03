@@ -21,4 +21,6 @@ jobs:
 
       - name: Run Pa11y with no-sandbox Chromium
         run: |
-          pa11y file://$GITHUB_WORKSPACE/index.html --chrome-launcher-flags="--no-sandbox --disable-setuid-sandbox"
+          pa11y file://$GITHUB_WORKSPACE/index.html \
+            --chrome-arg="--no-sandbox" \
+            --chrome-arg="--disable-setuid-sandbox"
