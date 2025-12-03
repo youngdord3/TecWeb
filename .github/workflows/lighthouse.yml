@@ -1,4 +1,4 @@
-name: Lighthouse CI
+name: Lighthouse CI - log only
 
 on:
   push:
@@ -33,17 +33,24 @@ jobs:
           echo "Found URLs:"
           cat urls.txt
 
-      - name: Run Lighthouse on all HTML files
+      - name: Run Lighthouse on all HTML files and print scores
         run: |
           while read url; do
             echo "------------------------------------------------------------"
             echo "Running Lighthouse on: $url"
             echo "------------------------------------------------------------"
-            lhci collect --url="$url" || true
+            
+            # Esegue Lighthouse e salva output JSON temporaneo
+            lhci collect --url="$url" --output=json --output-path=temp.json
+
+            # Estrae e stampa i punteggi principali
+            echo "Lighthouse scores for $url:"
+            cat temp.json | node -e "
+              const fs = require('fs');
+              const data = JSON.parse(fs.readFileSync('temp.json'));
+              const categories = data.categories;
+              for (const cat in categories) {
+                console.log(cat + ': ' + categories[cat].score);
+              }
+            "
           done < urls.txt
-
-          echo "Running LHCI assertions (won't stop workflow if failing)..."
-          lhci assert || true
-
-          echo "Uploading results (if LHCI server not configured, this is fine)..."
-          lhci upload || true
