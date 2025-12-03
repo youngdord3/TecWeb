@@ -12,9 +12,14 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Install Lighthouse CI
+      - name: Install Node tools
         run: |
-          npm install -g @lhci/cli
+          npm install -g @lhci/cli serve
 
-      - name: Run Lighthouse
-        run: lhci autorun --collect.staticDistDir="."
+      - name: Start static server
+        run: |
+          serve -s . -l 8080 &
+          sleep 3
+
+      - name: Run Lighthouse CI
+        run: lhci autorun --collect.url=http://localhost:8080/index.html
