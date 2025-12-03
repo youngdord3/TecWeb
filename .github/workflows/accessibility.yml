@@ -19,8 +19,8 @@ jobs:
           npm install -g pa11y
           npm install puppeteer@latest
 
-      - name: Run Pa11y with no-sandbox Chromium
+      - name: Run Pa11y (GitHub-safe Chromium)
+        env:
+          PUPPETEER_DISABLE_SANDBOX: "true"
         run: |
-          pa11y file://$GITHUB_WORKSPACE/index.html \
-            --chrome-arg="--no-sandbox" \
-            --chrome-arg="--disable-setuid-sandbox"
+          pa11y "file://$GITHUB_WORKSPACE/**/*.html"
