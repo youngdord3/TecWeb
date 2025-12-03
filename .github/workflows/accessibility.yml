@@ -10,15 +10,24 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-      - name: Install Node & Pa11y
+      - name: Install Node, Pa11y and Puppeteer
         run: |
           sudo apt-get update
           sudo apt-get install -y npm
           npm install -g pa11y
           npm install puppeteer@latest
 
-      - name: Run Pa11y with no-sandbox Chromium
+      - name: Run Pa11y on all HTML files
         run: |
-          pa11y file://$GITHUB_WORKSPACE/index.html --chrome-launcher-flags="--no-sandbox --disable-setuid-sandbox"
+          echo "Searching for all HTML files..."
+          find $GITHUB_WORKSPACE -name "*.html" -print0 | while IFS= read -r -d '' file; do
+            echo "------------------------------------------------------------"
+            echo "Checking accessibility for: $file"
+            echo "------------------------------------------------------------"
+            pa11y "file://$file"
+            echo "Done."
+            echo
+          done
