@@ -11,21 +11,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - name: Install VNU (HTML Validator)
-      run: |
-        curl -L https://github.com/validator/validator/releases/latest/download/vnu.jar -o vnu.jar
+      - name: Install VNU (HTML Validator)
+        run: |
+          curl -L https://github.com/validator/validator/releases/latest/download/vnu.jar -o vnu.jar
 
-    - name: Validate HTML only
-      run: |
-        find . -name "*.html" -print0 | xargs -0 java -jar vnu.jar --errors-only
+      - name: Validate HTML only
+        run: |
+          find . -name "*.html" -print0 | xargs -0 java -jar vnu.jar --errors-only
 
-    - name: Install Node.js
-      uses: actions/setup-node@v4
+      - name: Install Node.js
+        uses: actions/setup-node@v4
 
-    - name: Validate CSS (W3C)
-      run: |
-        npm install -g css-validator
-        find . -name "*.css" -exec css-validator {} \;
+      - name: Validate CSS (W3C)
+        run: |
+          npm install -g css-validator
+          find . -name "*.css" -exec css-validator {} \;
