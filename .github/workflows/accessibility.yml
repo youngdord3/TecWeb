@@ -13,21 +13,27 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Install Node, Pa11y and Puppeteer
+      - name: Install Node and Pa11y
         run: |
           sudo apt-get update
-          sudo apt-get install -y npm
           npm install -g pa11y
-          npm install puppeteer@latest
+          # Non serve installare puppeteer separatamente se usi pa11y globale,
+          # ma se vuoi essere sicuro delle dipendenze puoi lasciarlo o usare 'npm ci' se hai un package.json.
+
+      - name: Create Pa11y Config
+        # Creiamo un file di configurazione per disabilitare la sandbox di Chrome
+        run: |
+          echo '{"chromeLaunchConfig": {"args": ["--no-sandbox", "--disable-setuid-sandbox"]}}' > pa11y-config.json
 
       - name: Run Pa11y on all HTML files
         run: |
           echo "Searching for all HTML files..."
-          find $GITHUB_WORKSPACE -name "*.html" -print0 | while IFS= read -r -d '' file; do
+          # Il flag --config dice a Pa11y di usare le opzioni create sopra
+          find . -name "*.html" -print0 | while IFS= read -r -d '' file; do
             echo "------------------------------------------------------------"
             echo "Checking accessibility for: $file"
             echo "------------------------------------------------------------"
-            pa11y "file://$file"
+            pa11y --config pa11y-config.json "file://$(realpath "$file")"
             echo "Done."
             echo
           done
